@@ -1,0 +1,120 @@
+import tkinter as tk
+import numpy as np
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import scipy.linalg as la
+
+# Lista para almacenar los resultados anteriores, apliquenlo con criterio >:V solo son funciones, en su mayoria hechas con Numpy y el resto con SciPy
+resultados_anteriores = []
+
+def sumar_matrices():
+    global A, B
+    C = A + B
+    resultados_anteriores.append(C)
+    mostrar_resultados()
+
+def multiplicar_escalar():
+    global A, scalar
+    D = scalar * A
+    resultados_anteriores.append(D)
+    mostrar_resultados()
+
+def calcular_producto_punto():
+    global v1, v2
+    dot_product = np.dot(v1, v2)
+    resultados_anteriores.append(dot_product)
+    mostrar_resultados()
+
+def calcular_producto_matrices():
+    global A, B
+    matrix_product = np.dot(A, B)
+    resultados_anteriores.append(matrix_product)
+    mostrar_resultados()
+
+def calcular_transpuesta():
+    global A
+    A_transpose = np.transpose(A)
+    resultados_anteriores.append(A_transpose)
+    mostrar_resultados()
+
+def calcular_determinante():
+    global A
+    det_A = la.det(A)
+    resultados_anteriores.append(det_A)
+    mostrar_resultados()
+
+def calcular_inversa():
+    global A
+    try:
+        A_inv = la.inv(A)
+        resultados_anteriores.append(A_inv)
+    except la.LinAlgError:
+        resultados_anteriores.append("La matriz A no es invertible.")
+    mostrar_resultados()
+
+def mostrar_resultados():
+    resultado_text.delete(1.0, tk.END)
+    for resultado in resultados_anteriores[::-1]:  # Iterar sobre la lista de resultados en orden inverso
+        resultado_text.insert(tk.END, str(resultado) + "\n")
+    resultado_text.see(tk.END)  # Desplazar la vista hacia el último resultado
+
+def mostrar_grafico():
+    # Generar datos aleatorios para el gráfico de dispersión
+    x = np.random.rand(100)
+    y = np.random.rand(100)
+    
+    # Crear una figura de Matplotlib
+    fig = Figure(figsize=(5, 4), dpi=100)
+    ax = fig.add_subplot(111)
+    ax.scatter(x, y)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_title('Gráfico de Dispersión')
+    
+    # Mostrar la figura en el widget de la ventana
+    canvas = FigureCanvasTkAgg(fig, master=ventana)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
+
+# Crear una instancia de la ventana
+
+
+# Definir las matrices y vectores de ejemplo, por ahora por memoria. Pronto será de manera manual
+A = np.array([[1, 2, 3],
+              [4, 5, 6],
+              [7, 8, 9]])
+
+B = np.array([[9, 8, 7],
+              [6, 5, 4],
+              [3, 2, 1]])
+
+v1 = np.array([1, 2, 3])
+v2 = np.array([4, 5, 6])
+
+scalar = 2
+
+ventana = tk.Tk()
+ventana.title("Operaciones de Matrices y Vectores")
+# Crear botones para cada operación con colores personalizados, si quieren modifiquenlo.
+boton_suma = tk.Button(ventana, text="Sumar Matrices", command=sumar_matrices, bg="lightblue")
+boton_suma.pack()
+boton_multiplicacion_escalar = tk.Button(ventana, text="Multiplicar por Escalar", command=multiplicar_escalar, bg="lightgreen")
+boton_multiplicacion_escalar.pack()
+boton_producto_punto = tk.Button(ventana, text="Producto Punto", command=calcular_producto_punto, bg="lightcoral")
+boton_producto_punto.pack()
+boton_producto_matrices = tk.Button(ventana, text="Producto de Matrices", command=calcular_producto_matrices, bg="lightyellow")
+boton_producto_matrices.pack()
+boton_transpuesta = tk.Button(ventana, text="Transpuesta de A", command=calcular_transpuesta, bg="lightsalmon")
+boton_transpuesta.pack()
+boton_determinante = tk.Button(ventana, text="Determinante de A", command=calcular_determinante, bg="lightgrey")
+boton_determinante.pack()
+boton_inversa = tk.Button(ventana, text="Inversa de A", command=calcular_inversa, bg="lightpink")
+boton_inversa.pack()
+# Botón para mostrar el gráfico
+boton_mostrar_grafico = tk.Button(ventana, text="Mostrar Gráfico", command=mostrar_grafico)
+boton_mostrar_grafico.pack()
+# Área de texto para mostrar los resultados
+resultado_text = tk.Text(ventana, height=10, width=50)
+resultado_text.pack()
+# Ejecutar el bucle principal de la ventana
+ventana.mainloop()
